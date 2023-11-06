@@ -1,0 +1,1383 @@
+计算机科学与工程学院 实验报告
+实验课程名称	Java语言及程序设计	实验总成绩	
+
+实验报告分项成绩
+
+序号	实验项目	成绩
+1	HelloWorld和面向对象入门、进阶	
+2	文件的读和写	
+
+实验课程总结
+从以下方面总结：1.实验体现知识应用和初步研究能力；2. 反映基本观察、发现问题和分析问题能力；3. 实验项目内容或者实验课程是否存在问题及下一年度改进意见）4.其他方面
+以下是对JAVA实验课程的总结，包括四个方面：
+1. 实验体现知识应用和初步研究能力：
+   本学期的JAVA实验课程为我们提供了将课堂学到的理论知识应用到实际项目中的机会。在写JAVA题目、自己独立地完成一个选课系统的这个过程中，我感觉我的编程能力有了不错的提升，并且更好地理解了一些只靠听课较难理解的问题，更好地巩固了编程中容易被忽视的地方。
+2. 反映基本观察、发现问题和分析问题能力：
+   在独立完成实验内容时，未免会出现一些bug，需要仔细分析问题，研究代码，观察结果，或者查询解决方法，不断地debug、调试程序。这锻炼了我的问题解决能力，帮助我们定位和修复bug。同时，通过独立编程，我学会了自主发现问题并提出解决方案。
+3. 实验项目内容或者实验课程是否存在问题及下一年度改进意见：
+   实验项目的难度和复杂性可以进行适度调整。一些学生可能觉得一些实验任务太过繁重，而一些同学可能觉得内容简单，所以可以额外补充选做题达到更好的平衡。此外，实验课程中可以考虑增加小组合作项目，以培养学生的团队合作和沟通能力。
+4. 其他方面：
+   完成实验一后，我按照实验二PPT的前半部分修改了自己的代码。学习了更规范的代码编程后，在写实验二的时候，我明显比完成实验一更高效、更速度、代码质量更高。这说明，学习优秀代码可以很大程度提高自己的编程能力，提升代码质量。
+实验一
+实验目的与要求：
+（1）Java开发环境的熟悉。
+（2）使用Eclipse编辑、编译、运行、调试Java程序。
+（3）以选课系统业务为例完成面向对象入门、进阶。
+
+实验知识点：
+1.  JVM、JRE、JDK的安装位置与区别。
+2. 命令行运行javac, java, javac -cp, java -cp 。
+3. 环境变量配置（PATH，CLASSPATH，SOURCEPATH的设定方法与应用）。
+       4. 包管理：package；import；javac -d。
+       5.  Java基础语法：类型与类型转换；变量；运算符；流程控制（判断分支、循环）；类的继承、多态、封装。
+       6. JDK帮助文档的使用。
+
+实验内容：
+（请同学，按课件里的内容把预备知识、步骤，程序框图、调试好程序的源代码、结果截图及存在的问题写在下面，最好有类图和系统框架图）
+1.预备知识：
+（1）JAVA的Hello World程序及结果：
+ 
+（2）终端运行javac, java, javac -cp,java -cp
+A.假设命令行的当前工作目录下存在源文件 java_code/lectures/HelloWorld.java（其中HelloWorld.java 为文件 ）
+B.使用如下命令编译
+javac HelloWorld.java
+C.则目录下就会生成HelloWorld.class
+D.如果 HelloWorld.java 就位于当前目录，也可以使用如下命令编译：
+javac -d . HelloWorld.java
+E.依赖的 jar 包必须使用 -cp （或 -classpath 或 --class-path）选项指明：
+javac -cp ".;path/to/.jar" HelloWorld.java
+F.使用javac HelloWorld运行
+
+2.类的关系：
+
+3.源代码
+（1）为课程添加上课教师和选课人数信息，并创新能够对所有属性进行初始化的构造方法
+/**Course.java**/
+public abstract class Course {
+    int id; // 课程ID
+    String name; // 课程名称
+    int type; // 课程类型（必修 选修 其他）
+    String teacher; // 上课教师信息
+    int stuNum; // 选课人数
+
+    public Course() {// 默认的构造方法
+        // 有子类的父类一定要写出无参的构造方法，在子类对象创建时系统默认调用
+    }
+
+    // 初始化
+    public Course(int id, String name, int type, String thr, int stuNum) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.teacher = thr;
+        this.stuNum = stuNum;
+    }
+}
+（2）从键盘手动输入4个课程信息，并将课程信息存入Vector中
+/**Course.java**/
+// 课程信息输入
+public static Course inputCourse(int id) {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入课程名:");
+    String name = sc.next();
+    System.out.println("请输入课程类型(0必修, 1选修):");
+    int type = sc.nextInt();
+    System.out.println("请输入授课老师信息:");
+    String thr = sc.next();
+    System.out.println("请输入选课人数:");
+    int stuNum = sc.nextInt();
+    Course c;
+    if (type == 0)// 必修
+    {
+        System.out.println("请输入学分:");
+        int credit = sc.nextInt();
+        c = new RequiredCourse(id, name, type, stuNum, thr, credit);
+        RequiredCourse.rclist.add(c);
+        Student.sclist.add(c);
+    } else {// 选修
+        System.out.println("请输入最大选课人数:");
+        int maxStuNum = sc.nextInt();
+        c = new OptionalCourse(id, name, type, stuNum, thr, maxStuNum);
+        OptionalCourse.oclist.add(c);
+    }
+    return c;
+}
+
+/**Courses.java**/
+// 对所有课程进行列表存储
+static Vector<Course> clist = new Vector();
+
+// 添加一门课程
+public static void addCourse() {
+    if (Courses.clist.size() < 1) {
+        Courses.clist.add(Course.inputCourse(1));
+    } else {
+        Courses.clist.add(Course.inputCourse(Courses.clist.size() + 1));
+    }
+}
+
+// 添加多门课程
+public static void addCourses() {
+    int i = Courses.clist.size();
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("请输入第" + (i++) + "门课程信息");
+        Courses.addCourse();
+        System.out.print("是否继续添加课程 y/n");
+        if (sc.next().equals("y")||sc.next().equals("Y"))
+            continue;
+        else
+            break;
+    }
+}
+运行截图如下：
+添加课程：
+
+添加完毕后显示课程：
+
+
+（3）按照选课人数对课程进行排序，并输出Vector中所有课程信息
+/**Courses.java**/
+// 以选课人数进行课程排序
+public static void SortCourseList() {
+    Course c, k, m;
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        for (int j = i + 1; j < Courses.clist.size(); j++) {
+            k = (Course) (Courses.clist.get(j));
+            c = (Course) (Courses.clist.get(i));
+            m = c;
+            if (c.stuNum < k.stuNum) {
+                Courses.clist.set(i, k);
+                Courses.clist.set(j, m);
+            }
+        }
+    }
+    System.out.print("排序成功!");
+}
+// 课程列表查看
+public static void showCourses() {
+    System.out.println("编号  课程    类型    教师    选课人数    学分/最大选课人数");
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        ((Course) (Courses.clist.get(i))).show();
+    }
+
+排序前课程信息：
+
+排序后课程信息：
+
+（4）输入教师名称，查找是否有该教师讲授的课程，输出该教师所有讲授课程的信息
+/**Courses.java**/
+// 以教师姓名查找所授课课程
+public static void SearchCourseByTeacher() {
+    System.out.println("请输入需要查找的教师名称:");
+    Scanner sc = new Scanner(System.in);
+    String name = sc.next();
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        Course c = ((Course) (Courses.clist.get(i)));
+        if (c.teacher.equals(name))
+            c.show();
+    }
+}
+
+
+（5）在主函数输出一个菜单，包括课程新增，课程删除，显示课程列表，按照课程上课人数排序，设置课程教师等功能，由用户输入序号选择功能并实现上述功能
+/**Main.java**/
+//管理员页面
+public static void adminMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入管理员密码:");
+    String pass = sc.next();
+    if (pass.equals(Users.admin.pass)) {
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.新建课程 \n2.删除课程 \n3.设置课程老师 \n4.查找老师讲授课程 \n" +
+                            "5.显示课程列表 \n6.按照选课人数排序 \n7.显示学生列表 \n8.显示教师列表 \n" +
+                            "9.添加老师或学生 \n10.删除老师和学生 \n11.恢复学生和教师初始密码 \n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 11) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Courses.addCourses();//新建课程
+                        break;
+                    case 2:
+                        Courses.deleteCourses();//删除课程
+                        break;
+                    case 3:
+                        Courses.setCourseTeacher();//设置课程老师
+                        break;
+                    case 4:
+                        Courses.SearchCourseByTeacher();//查找老师讲授课程
+                        break;
+                    case 5:
+                        Courses.showCourses();//显示课程列表
+                        break;
+                    case 6:
+                        Courses.SortCourseList();//按照选课人数排序
+                        break;
+                    case 7:
+                        Users.showStudents();//显示学生列表
+                        break;
+                    case 8:
+                        Users.showTeachers();//显示教师列表
+                        break;
+                    case 9:
+                        Users.addUsers();//添加老师或学生
+                        break;
+                    case 10:
+                        Users.deleteUsers();//删除老师和学生
+                        break;
+                    case 11:
+                        Users.setOriginpass();//恢复学生和教师初始密码
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+/**Courses.java**/
+// 添加一门课程
+public static void addCourse() {
+    if (Courses.clist.size() < 1) {
+        Courses.clist.add(Course.inputCourse(1));
+    } else {
+        Courses.clist.add(Course.inputCourse(Courses.clist.size() + 1));
+    }
+}
+
+// 添加多门课程
+public static void addCourses() {
+    int i = Courses.clist.size();
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("请输入第" + (i++) + "门课程信息");
+        Courses.addCourse();
+        System.out.print("是否继续添加课程 y/n");
+        String inputFlag = sc.next();
+        if (inputFlag.equals("y")||inputFlag.equals("Y"))
+            continue;
+        else
+            break;
+    }
+}
+
+// 删除一门课程
+public static void deleteCourse() {
+    System.out.println("请输入要删除的课程名称:");
+    Scanner sc = new Scanner(System.in);
+    String name = sc.next();
+    int flag = 0;
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        if (((Course) (Courses.clist.get(i))).name.equals(name)) {
+            Courses.clist.remove(i);
+            flag = 1;
+            System.out.println("删除成功!");
+        }
+    }
+    if(flag ==0)
+    {
+        System.out.println("查询不到该课程信息, 删除失败!");
+    }
+}
+
+// 删除多门课程
+public static void deleteCourses() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        Courses.deleteCourse();
+        System.out.print("是否继续删除课程 y/n");
+        String inputFlag = sc.next();
+        if (inputFlag.equals("y")||inputFlag.equals("Y"))
+            continue;
+        else{
+            System.out.print("结束课程的删除!");
+            break;
+        }
+    }
+}
+
+
+// 设置课程教师
+public static void setCourseTeacher() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入要设定的课程名称:");
+    String name = sc.next();
+    int flag=0;
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        if (((Course) (Courses.clist.get(i))).name.equals(name)) {
+            System.out.println("请输入要设定的老师:");
+            Courses.clist.get(i).teacher = sc.next();
+            flag = 1;
+            System.out.println("重设成功!");
+        }
+    }
+    if(flag == 0)
+        System.out.println("查询不到该课程信息, 设置失败!");
+}
+
+
+// 课程列表查看
+public static void showCourses() {
+    System.out.println("编号  课程    类型    教师    选课人数    学分/最大选课人数");
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        ((Course) (Courses.clist.get(i))).show();
+    }
+}
+
+// 以选课人数进行课程排序
+public static void SortCourseList() {
+    Course c, k, m;
+    for (int i = 0; i < Courses.clist.size(); i++) {
+        for (int j = i + 1; j < Courses.clist.size(); j++) {
+            k = (Course) (Courses.clist.get(j));
+            c = (Course) (Courses.clist.get(i));
+            m = c;
+            if (c.stuNum < k.stuNum) {
+                Courses.clist.set(i, k);
+                Courses.clist.set(j, m);
+            }
+        }
+    }
+    System.out.print("排序成功!");
+}
+
+
+管理员界面：                      添加课程：
+  
+删除课程：
+
+
+
+
+显示课程列表：
+
+按选课人数排序后：
+
+重设老师：
+
+
+（6）创建必修课程类和选修课程类，继承与Course类
+/**OptionalCourse**/
+public class OptionalCourse extends Course {
+    public int maxStuNum;
+    // 对OptionalCourse进行列表存储
+    static Vector<Course> oclist = new Vector();
+
+    public OptionalCourse(int i, String s) {
+        this.id = i;
+        this.name = s;
+        type = 1;
+public OptionalCourse(int id, String name, int type, int stuNum, String teacher, int maxStuNum) {
+    this.id = id;
+    this.name = name;
+    this.type = type;
+    this.teacher = teacher;
+    this.stuNum = stuNum;
+    this.maxStuNum = maxStuNum;
+}
+}
+/**RequiredCourse**/
+public class RequiredCourse extends Course {
+    private int credit;// 学分
+    // 对RequiredCourse进行列表存储
+    static Vector<Course> rclist = new Vector();
+
+    public RequiredCourse(int i, String s) {
+        this.id = i;
+        this.name = s;
+        type = 0;
+    }
+public RequiredCourse(int id, String name, int type, int stuNum, String teacher, int credit) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.teacher = teacher;
+        this.stuNum = stuNum;
+        this.credit = credit;
+    }
+}
+
+（7）选修课程类增加最大选课人数属性，重写该类的构造方法，show方法，课程输入方法使其能对新增属性进行操作
+/**OptionalCourse**/
+public void show() {
+    System.out.println(id + "    " + name + "    选修    " + teacher + "    " + stuNum + "    " + maxStuNum);
+}
+
+// 课程列表查看
+public static void showOptionalCourses() {
+    System.out.println("编号  课程    类型    教师    选课人数    最大选课人数");
+    for (Course oCourse : oclist) {
+        oCourse.show();
+    }
+}
+/**RequiredCourse**/
+public void show() {
+    System.out.println(id + "    " + name + "    必修    " + teacher + "    " + stuNum + "    " + credit);
+}
+
+// 课程列表查看
+public static void showRequiredCourses() {
+    System.out.println("编号  课程    类型    教师    选课人数    学分");
+    for (Course rCourse : rclist) {
+        rCourse.show();
+
+    }
+}
+
+（8）创建用户集合类，包括管理员用户对象（唯一一个，User类对象），student列表对象（Vector，用于存储所有Student），teacher列表对象（Vector，用于存储所有Teacher）
+/**Users.java**/
+public class Users {
+    static User admin = new User("admin", "123456");
+
+    static Vector<Student> studentList = new Vector<Student>();
+
+    static Vector<Teacher> teacherList = new Vector<Teacher>();
+}
+
+
+
+实验二
+实验目的与要求：
+（4）完成实验一课后题1.为课程添加上课教师和选课人数信息，并创新能  够对所有属性进行初始化的构造方法。
+（5）完成实验一课后题2.从键盘手动输入4个课程信息，并将课程信息存入Vector中。
+（6）完成实验一课后题3.按照选课人数对课程进行排序，并输出Vector中所有课程信息.
+（7）完成实验一课后题4.输入教师名称，查找是否有该老师讲授的课程，输出该教师所有讲授课程的信息。
+（8）完成实验一课后题5.在主函数输出一个菜单，包括课程新增、课程删除、显示课程列表、按课程上课人数排序，设置课程教师等功能，由用户输入序号选择功能，并实现上述功能。
+（9）完成实验一课后题6.创建必修课程类和选修课程类，继承于课程Course类。
+（10）完成实验一课后题7.选修课程类增加最大选课人数属性，重写该类构造方法、show方法、课程输入方法使其能对新增属性进行操作。
+（11）完成实验一课后题8.必修课程类增加学分属性，重写该类的构造方法，show方法，课程输入方法使其能对新增属性进行操作。
+（12）完成实验一课后题9.创建用户集合类，包括管理员用户对象（唯一一个，User类对象），student列表对象（Vector，用于存储所有student），teacher列表对象（Vector，用于存储所有teacher）。
+（13）文件的写入。
+（14）文件的读取。
+
+实验知识点：
+1.类的重构。
+2.类的构造方法。
+3.  Vector类。
+        4. bufferReader对象。
+        5. fileReader对象。
+        6. JDK帮助文档的使用。
+
+实验内容：
+    （请同学，按课件里的内容把预备知识、步骤，程序框图、调试好程序的源代码、结果截图及存在的问题写在下面，最好有类图和系统框架图）
+  
+1.预备知识
+（1）类的重构
+类的重构是指对现有的类进行修改、调整和优化，以改善其结构、性能或可维护性。这通常包括重命名方法、删除不必要的代码、拆分或合并类等。类的重构有助于确保代码的质量和可维护性。
+
+（2）类的构造方法
+类的构造方法是一种特殊的方法，用于创建类的对象。构造方法通常用于初始化对象的属性和执行必要的设置。每个类可以有一个或多个构造方法，它们可以接受不同的参数，以满足不同情况下的对象创建需求。
+
+（3）Vector类
+Vector 是Java中的一个类，它是一个动态数组，可以自动调整大小以容纳元素。它属于Java集合框架的一部分，用于存储对象。与普通的数组不同，Vector 具有动态增长和缩小的能力，因此非常适合在运行时管理一组对象。
+
+（4）文件的读取和写入
+BufferedReader 是Java的一个类，用于高效读取文本文件的数据。它提供了缓冲读取，减少了文件访问的次数，从而提高了读取速度。通常与FileReader一起使用，可以逐行读取文本文件的内容。
+FileReader 也是Java的一个类，用于读取文件的字符数据。它可以打开文件以供读取，并以字符的形式读取文件内容。通常与BufferedReader等其他输入流一起使用，以提高读取效率。
+
+/**Courses.java**/
+// 将课程列表中所有课程信息写入文件
+public static void saveCourse() {
+    File file = new File("Files/Courses.txt");
+    try {// BufferedReader对象out按行向文件写入，写入文件可能会发生异常，因此需要用try catch捕获异常
+        if (!file.exists()) {
+            file.createNewFile();// 创建新文件
+        }
+        BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+        for (int i = 0; i < Courses.clist.size(); i++) {// 遍历课程列表，调用课程的show方法显示信息
+            out.write(((Course) (Courses.clist.get(i))).toString() + "\r\n");// \r\n换行
+            // 由于添加课程时按照选修课和必修课添加课程，所以toString方法会调用选修课和必修课相应的toString方法
+        }
+
+        out.flush();// 把缓存区内容压入文件
+        out.close();// 关闭文件
+    } catch (IOException e) {
+        // TODO Auto-generated catch bllock
+        e.printStackTrace();
+    }
+}
+
+public static void readCourse() {
+    try {// 使用BufferedReader对象从文件流中读取文件内容
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Files/Courses.txt")));
+        String data = null;
+        while ((data = br.readLine()) != null)// 按行读取文件
+        {
+            String[] ps = data.split(" ");
+            int id = Integer.parseInt(ps[0]);
+            String name = ps[1];
+            int type = Integer.parseInt(ps[2]);
+            int stuNum = Integer.parseInt(ps[3]);
+            String teacher = ps[4];
+            if (type == 0) {
+                int credit = Integer.parseInt(ps[5]);
+                Courses.clist.add(new RequiredCourse(id, name, type, stuNum, teacher, credit));
+            } else {
+                int maxStuNum = Integer.parseInt(ps[5]);
+                Courses.clist.add(new OptionalCourse(id, name, type, stuNum, teacher, maxStuNum));
+            }
+        }
+        br.close();
+    } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}
+
+
+/**Course.java**/
+public String toString() {
+    return id + " " + name + " " + type + " " + stuNum + " " + teacher;
+    // 将课程的相关信息合并为字符串返回
+}
+
+
+
+2.Diagrams
+
+
+
+
+
+（1）系统分为管理员（唯一一个），教师，学生三类用户，实现其三者的登录功能（验证密码）。 
+/**Main.java**/
+public static void menu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请选择您的身份:");
+    while (true) {
+        System.out.println("请选择身份:\n1.管理员\n2.老师\n3.学生\n0.退出");
+        int choose = sc.nextInt();
+        if (choose == 0) {
+            System.out.println("欢迎使用学生选课系统，再见!");
+            break;
+        } else if (choose < 1 || choose > 3) {
+            System.out.println("输入错误!请重新输入:");
+            continue;
+        } else {
+            switch (choose) {
+                case 1:
+                    adminMenu();
+                    break;
+                case 2:
+                    teacherMenu();
+                    break;
+                case 3:
+                    stuMenu();
+                    break;
+            }
+        }
+    }
+
+//教师页面
+public static void teacherMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入工号：");
+    int inputWorkId = sc.nextInt();
+    System.out.println("请输入密码：");
+    String inputPass = sc.next();
+    Teacher thr = Users.loginTeacher(inputWorkId, inputPass);
+    if (thr != null) {
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.修改登录密码\n2.查看所授课程\n3.查看所授课程的上课学生列表\n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 3) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Users.changeTeacherPass();//修改登录密码
+                        break;
+                    case 2:
+                        Teacher.showTeacherCourse(thr.name);//查看所授课程
+                        break;
+                    case 3:
+                        Teacher.showCourseStuNum(thr.name,thr.level);//查看所授课程的上课学生列表
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+
+//学生页面
+public static void stuMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入学号:");
+    int inputId = sc.nextInt();
+    System.out.println("请输入密码:");
+    String inputPass = sc.next();
+    Student stu = Users.loginStudent(inputId, inputPass);
+    if (stu != null) {//如果不为空
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.修改登录密码\n2.查看所上课程\n3.选修课选课\n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 3) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Users.changeStudentPass();//修改登录密码
+                        break;
+                    case 2:
+                        Student.showStudentCourses(inputPass);//查看所上课程
+                        break;
+                    case 3:
+                        Student.studentCourses();//选修课选课
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+/**Users.java**/
+//教师登陆验证
+public static Teacher loginTeacher(int inputWorkId, String inputPass) {
+    for (Teacher teacher : teacherList) {
+        if (teacher.workId == inputWorkId && teacher.pass.equals(inputPass)) {
+            System.out.println(teacher.name + " " + teacher.level + ",你好！");
+            return teacher;
+        }
+    }
+    return null;
+}
+//学生登陆验证
+public static Student loginStudent(int inputId, String inputPass) {
+    for (Student student : studentList) {
+        if (student.id == inputId && student.pass.equals(inputPass)) {
+            System.out.println(student.Class + " " + student.name + ",你好！");
+            return student;
+        }
+    }
+    return null;
+}
+总目录：
+
+教师登陆验证：（成功登陆）       学生登陆验证：（成功登陆）
+ 
+管理员密码错误：                  教师密码错误：   学生密码错误：
+   
+（2）管理员包括功能：添加课程、删除课程、按照选课人数排序，显示课程清单，修改授课教师，显示学生列表、 显示教师列表，恢复学生和教师初始密码（初始密码为：123456）,添加老师和学生，删除老师和学生。 
+管理员界面：1-5源代码以及结果展示已在实验一中体现
+/**Users.java**/
+// 添加老师或学生
+public static void addUsers() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("你要添加什么用户?\n1.老师\n2.学生\n0.结束");
+        int choose = sc.nextInt();
+        if (choose == 0) {
+            System.out.println("添加完成,再见!");
+            break;
+        } else if (choose < 1 || choose > 2) {
+            System.out.println("输入错误!请重新输入:");
+            continue;
+        } else {
+            switch (choose) {
+                case 1: {
+                    Users.teacherList.add(Teacher.inputTeacher());
+                    break;
+                }
+                case 2: {
+                    Users.studentList.add(Student.inputStudent());
+                    break;
+                }
+            }
+        }
+    }
+}
+// 删除老师或学生
+public static void deleteUsers() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("你要删除什么用户?\n1.老师\n2.学生\n0.结束");
+        int choose = sc.nextInt();
+        if (choose == 0) {
+            System.out.println("删除完成,再见!");
+            break;
+        } else if (choose < 1 || choose > 2) {
+            System.out.println("输入错误!请重新输入:");
+            continue;
+        } else {
+            switch (choose) {
+                case 1: {
+                    Teacher.deleteTeacher();
+                    break;
+                }
+
+                case 2: {
+                    Student.deleteStudent();
+                    break;
+                }
+            }
+        }
+    }
+}
+//显示学生列表
+public static void showStudents() {
+    System.out.println("学号    名字    班级");
+    for (int i = 0; i < Users.studentList.size(); i++) {
+        Users.studentList.get(i).show();
+    }
+}
+//显示教师列表
+public static void showTeachers() {
+    System.out.println("工号    名字    职称");
+    for (int i = 0; i < Users.teacherList.size(); i++) {
+        Users.teacherList.get(i).show();
+    }
+}
+// admin重置密码
+public static void setOriginpass() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("你要重置谁的密码?\n1.老师\n2.学生\n0.结束");
+        int choose = sc.nextInt();
+        if (choose == 0) {
+            System.out.println("重置完成,再见!");
+            break;
+        } else if (choose < 1 || choose > 2) {
+            System.out.println("输入错误!请重新输入:");
+            continue;
+        } else {
+            int flag =0;
+            switch (choose) {
+                case 1: {
+                    System.out.println("请输入要设置的教师工号:");
+                    int workId = sc.nextInt();
+                    for (Teacher teacher : teacherList) {
+                        if (teacher.workId == workId) {
+                            teacher.pass = "123456";
+                            flag=1;
+                            System.out.println("重置完成!");
+                            break;
+                        }
+                    }
+                    if(flag==0)
+                    {
+                        System.out.println("查询不到该教师信息, 重置密码失败!");
+                    }
+                    break;
+                }
+
+                case 2: {
+                    System.out.println("请输入要设置的学生学号:");
+                    int id = sc.nextInt();
+                    for (Student student : studentList) {
+                        if (student.id == id) {
+                            student.pass = "123456";
+                            flag =1;
+                            System.out.println("重置完成!");
+                            break;
+                        }
+                    }
+                    if(flag==0)
+                    {
+                        System.out.println("查询不到该学生信息, 重置密码失败!");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+
+管理员界面：1-5源代码以及结果展示已在实验一中体现
+
+显示学生列表：                      显示教师列表：
+  
+恢复学生和教师初始密码：
+ 重置后：
+（3）教师包括功能：修改登录密码，查看自己所授课程，查看某门所授课程的上课学生列表。 
+/**Users.java**/
+//教师 修改登录密码
+public static void changeTeacherPass() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入要设置的教师工号:");
+    int inputWorkId = sc.nextInt();
+    System.out.println("请输入原始密码:");
+    String inputPass = sc.next();
+    int flag=0;
+    for (Teacher teacher : teacherList) {
+        if (teacher.workId == inputWorkId && teacher.pass.equals(inputPass)) {
+            System.out.println("请输入新密码:");
+            String inputPass1 = sc.next();
+            System.out.println("请再次输入新密码!");
+            String inputPass2 = sc.next();
+            if (inputPass1.equals(inputPass2)) {
+                flag=1;
+                if (inputPass.equals(inputPass1)) {
+                    System.out.println("新密码不得与原密码相同!");
+                } else {
+                    teacher.pass = inputPass1;
+                    System.out.println("新密码修改成功!");
+                }
+            }
+        }
+    }
+    if(flag == 0){
+        System.out.println("查询不到该老师信息或者密码错误!");
+    }
+}
+
+/**Teacher.java**/
+// 查找所授课课程
+public static void showTeacherCourse(String name) {
+    for (Course tCourse : Courses.clist) {
+        if (tCourse.teacher.equals(name)) {
+            courseTaught.add(tCourse);
+        }
+    }
+    System.out.println(name + ", 您现在所授课程：");
+    System.out.println("编号  课程    类型    教师    选课人数    学分/最大选课人数");
+    for (Course tCourse : courseTaught) {
+        tCourse.show();
+    }
+}
+
+// 查看某门所授课程的上课学生列表
+public static void showCourseStuNum(String name, String level) {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println(name + level + "现在所授课程：");
+        for (Course tCourse : courseTaught) {
+            tCourse.show();
+        }
+        System.out.println("请输入要查询的课号(输入0取消查询):");
+        int inputId = sc.nextInt();
+        boolean courseFound = false;
+
+        for (Course tCourse : courseTaught) {
+            if(tCourse.id==inputId)//老师开设了这门课
+            {
+                courseFound = true;
+                int num = 0;
+                System.out.println("选了课程 " + tCourse.name + " 的学生列表:");
+                for (Student student : Users.studentList) {
+                    if (student.isEnrolledInCourse(inputId)) {
+                        System.out.print(++num+"   ");
+                        student.show();
+                    }
+                }
+                break;
+            }
+        }
+        if (inputId == 0) {
+            System.out.println("结束课程信息的查询!");
+            break;
+        }
+        else if(!courseFound)
+         {
+            System.out.println("你没有教授这门课程!");
+        }
+        break;
+    }
+
+}
+
+教师登陆页面：
+
+查看所授课：
+
+查看必修课程：             查看选修课程：
+ 
+（4）学生包括功能：修改登录密码，查看自己所上课程，选修课选课。 
+/**Users.java**/
+//学生 修改登陆密码
+public static void changeStudentPass() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入要设置的学生学号:");
+    int inputId = sc.nextInt();
+    System.out.println("请输入原始密码:");
+    String inputPass = sc.next();
+    int flag = 0;
+    for (Student student : studentList) {
+        if (student.id == inputId && student.pass.equals(inputPass)) {
+            System.out.println("请输入新密码:");
+            String inputPass1 = sc.next();
+            System.out.println("请再次输入新密码：");
+            //String inputPass2 = sc.next();
+            if (inputPass1.equals(sc.next())) {
+                flag =1;
+                if (inputPass.equals(inputPass1)) {
+                    System.out.println("新密码不得与原密码相同!");
+                } else {
+                    student.pass = inputPass1;
+                    System.out.println("新密码修改成功!");
+                }
+            }
+        }
+
+    }
+    if(flag == 0){
+        System.out.println("查询不到该学生信息或者密码错误!");
+    }
+}
+
+/**Student.java**/
+// 学生选课
+public static void studentCourses() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("学校总选修课列表如下:");
+        for (Course oCourse : OptionalCourse.oclist) {
+            oCourse.show();
+        }
+        System.out.println("请输入想上的选修课的课号(输入0退出):");
+        int inputId = sc.nextInt();
+        if(inputId != 0){
+            int flag = 0;
+            for (Course oCourse : OptionalCourse.oclist) {// 在总的选修课列表里面匹配
+                if (oCourse.id == inputId) {
+                    flag = 1;
+                    boolean isAlreadyEnrolled = false;
+
+                    for (Course sOptionalcourse : sOptionalclist) {
+		      // 在已选选修中匹配 看是否已选
+                        if (oCourse.id == sOptionalcourse.id) {
+                            System.out.println("此选修课程已经选过啦!");
+                            isAlreadyEnrolled = true;
+                            break;
+                        }
+                    }
+                    if (!isAlreadyEnrolled) {//未被选
+                        if (oCourse.stuNum < oCourse.getMaxStuNum()) {
+			  // 看选修课人数是否超标
+                            oCourse.stuNum += 1;
+                            sOptionalclist.add(oCourse);//选修
+                            sclist.add(oCourse);//总共
+                            System.out.println("选课成功!");
+                        } else {
+                            System.out.println("此选修课程选课人数已经达到上限!");
+                        }
+                    }
+                    break;
+                }
+            }
+            if(flag ==0){
+                System.out.println("请输入正确的选修课的课号!");
+                break;
+            }
+        }
+        System.out.println("结束选课!");
+        break;
+    }
+}
+学生登陆后菜单：       学生修改密码：（成功）   学生修改密码：（失败）
+
+修改成功后的文件：
+
+
+查看当前课程：
+
+学生端选课：（以Python为例）
+
+选课成功后再次查看当前课程：（发现Python被添加，同时Python当前所选人数+1）
+
+当一门选修课选课人数达到上限，此时再有学生选课时：（会无法选择）
+
+（5）课程包括选修课和必修课，必修课的学生所有学生上课，选修课设置最大选课人数属性，在学生选课时进行验证。 
+
+/**Student.java**/
+// 学生选课
+public static void studentCourses() {
+    Scanner sc = new Scanner(System.in);
+    while (true) {
+        System.out.println("学校总选修课列表如下:");
+        for (Course oCourse : OptionalCourse.oclist) {
+            oCourse.show();
+        }
+        System.out.println("请输入想上的选修课的课号(输入0退出):");
+        int inputId = sc.nextInt();
+        if(inputId != 0){
+            int flag = 0;
+            for (Course oCourse : OptionalCourse.oclist) {// 在总的选修课列表里面匹配
+                if (oCourse.id == inputId) {
+                    flag = 1;
+                    boolean isAlreadyEnrolled = false;
+
+                    for (Course sOptionalcourse : sOptionalclist) {
+		      // 在已选选修中匹配 看是否已选
+                        if (oCourse.id == sOptionalcourse.id) {
+                            System.out.println("此选修课程已经选过啦!");
+                            isAlreadyEnrolled = true;
+                            break;
+                        }
+                    }
+                    if (!isAlreadyEnrolled) {//未被选
+                        if (oCourse.stuNum < oCourse.getMaxStuNum()) {
+			  // 看选修课人数是否超标
+                            oCourse.stuNum += 1;
+                            sOptionalclist.add(oCourse);//选修
+                            sclist.add(oCourse);//总共
+                            System.out.println("选课成功!");
+                        } else {
+                            System.out.println("此选修课程选课人数已经达到上限!");
+                        }
+                    }
+                    break;
+                }
+            }
+            if(flag ==0){
+                System.out.println("请输入正确的选修课的课号!");
+                break;
+            }
+        }
+        System.out.println("结束选课!");
+        break;
+    }
+}
+
+查看课程是，存在所有必修：
+
+选课人数限制：当一门选修课选课人数达到上限，则不能继续选修：
+
+
+（6）课程、教师、学生信息，学生选课信息要求存储在文件里，在下次系统运行时从文件中读取作为系统的基础运行数据。
+/**Student.java**/
+public String toString() {
+    return id + " " +pass+" "+ Class + " " + name;
+    // 将学生的相关信息合并为字符串返回
+}
+
+// 将studentList中所有student信息写入文件
+public static void saveStudents() {
+    File file = new File("Files/Students.txt");
+    try {// BufferedReader对象out按行向文件写入，写入文件可能会发生异常，因此需要用try catch捕获异常
+        if (!file.exists()) {
+            file.createNewFile();// 创建新文件
+        }
+        BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+        for (int i = 0; i < Users.studentList.size(); i++) {// 遍历student列表，调用student的show方法显示信息
+            out.write(((Student) (Users.studentList.get(i))).toString() + "\r\n");// \r\n换行
+            // 由于添加课程时按照选修课和必修课添加课程，所以toString方法会调用选修课和必修课相应的toString方法
+        }
+
+        out.flush();// 把缓存区内容压入文件
+        out.close();// 关闭文件
+    } catch (IOException e) {
+        // TODO Auto-generated catch bllock
+        e.printStackTrace();
+    }
+}
+
+public static void readStudent() {
+    try {// 使用BufferedReader对象从文件流中读取文件内容
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Files/Students.txt")));
+        String data = null;
+        while ((data = br.readLine()) != null)// 按行读取文件
+        {
+            String[] ps = data.split(" ");
+            int id = Integer.parseInt(ps[0]);
+            String pass = ps[1];
+            String Class = ps[2];
+            String name = ps[3];
+            Users.studentList.add(new Student(name, pass, id, Class));
+        }
+        br.close();
+    } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}
+/**Teacher.java**/
+public String toString() {
+    return workId + " " +pass+" "+ name + " " + level;
+    // 将教师的相关信息合并为字符串返回
+}
+
+// 将课程列表中所有Teacher写入文件
+public static void saveTeachers() {
+    File file = new File("Files/Teachers.txt");
+    try {// BufferedReader对象out按行向文件写入，写入文件可能会发生异常，因此需要用try catch捕获异常
+        if (!file.exists()) {
+            file.createNewFile();// 创建新文件
+        }
+        BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+        for (int i = 0; i < Users.teacherList.size(); i++) {// 遍历课程列表，调用课程的show方法显示信息
+            out.write(((Teacher) (Users.teacherList.get(i))).toString() + "\r\n");// \r\n换行
+            // 由于添加课程时按照选修课和必修课添加课程，所以toString方法会调用选修课和必修课相应的toString方法
+        }
+
+        out.flush();// 把缓存区内容压入文件
+        out.close();// 关闭文件
+    } catch (IOException e) {
+        // TODO Auto-generated catch bllock
+        e.printStackTrace();
+    }
+}
+
+public static void readTeacher() {
+    try {// 使用BufferedReader对象从文件流中读取文件内容
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Files/Teachers.txt")));
+        String data = null;
+        while ((data = br.readLine()) != null)// 按行读取文件
+        {
+            String[] ps = data.split(" ");
+            int id = Integer.parseInt(ps[0]);
+            String pass = ps[1];
+            String name = ps[2];
+            String level = ps[3];
+            Users.teacherList.add(new Teacher(name, pass, id, level));
+        }
+        br.close();
+    } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+}
+
+/**Courses.java**/
+public String toString() {
+    return id + " " + name + " " + type + " " + stuNum + " " + teacher;
+    // 将课程的相关信息合并为字符串返回
+}
+
+// 将课程列表中所有课程信息写入文件
+    public static void saveCourse() {
+        File file = new File("Files/Courses.txt");
+        try {// BufferedReader对象out按行向文件写入，写入文件可能会发生异常，因此需要用try catch捕获异常
+            if (!file.exists()) {
+                file.createNewFile();// 创建新文件
+            }
+            BufferedWriter out = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+            for (int i = 0; i < Courses.clist.size(); i++) {// 遍历课程列表，调用课程的show方法显示信息
+                out.write(((Course) (Courses.clist.get(i))).toString() + "\r\n");// \r\n换行
+                // 由于添加课程时按照选修课和必修课添加课程，所以toString方法会调用选修课和必修课相应的toString方法
+            }
+
+            out.flush();// 把缓存区内容压入文件
+            out.close();// 关闭文件
+        } catch (IOException e) {
+            // TODO Auto-generated catch bllock
+            e.printStackTrace();
+        }
+    }
+
+    public static void readCourse() {
+        try {// 使用BufferedReader对象从文件流中读取文件内容
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("Files/Courses.txt")));
+            String data = null;
+            while ((data = br.readLine()) != null)// 按行读取文件
+            {
+                String[] ps = data.split(" ");
+                int id = Integer.parseInt(ps[0]);
+                String name = ps[1];
+                int type = Integer.parseInt(ps[2]);
+                int stuNum = Integer.parseInt(ps[3]);
+                String teacher = ps[4];
+                if (type == 0) {
+                    int credit = Integer.parseInt(ps[5]);
+                    Courses.clist.add(new RequiredCourse(id, name, type, stuNum, teacher, credit));
+                    RequiredCourse.rclist.add(new RequiredCourse(id, name, type, stuNum, teacher, credit));
+                    Student.sclist.add(new RequiredCourse(id, name, type, stuNum, teacher, credit));
+                } else  if (type == 1){
+                    int maxStuNum = Integer.parseInt(ps[5]);
+                    Courses.clist.add(new OptionalCourse(id, name, type, stuNum, teacher, maxStuNum));
+                    OptionalCourse.oclist.add(new OptionalCourse(id, name, type, stuNum, teacher, maxStuNum));
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+（7）建立一个菜单，接收不同用户登录系统，并且提供不同用户的功能选择菜单。
+/**Main.java**/
+public static void menu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请选择您的身份:");
+    while (true) {
+        System.out.println("请选择身份:\n1.管理员\n2.老师\n3.学生\n0.退出");
+        int choose = sc.nextInt();
+        if (choose == 0) {
+            System.out.println("欢迎使用学生选课系统，再见!");
+            break;
+        } else if (choose < 1 || choose > 3) {
+            System.out.println("输入错误!请重新输入:");
+            continue;
+        } else {
+            switch (choose) {
+                case 1:
+                    adminMenu();
+                    break;
+                case 2:
+                    teacherMenu();
+                    break;
+                case 3:
+                    stuMenu();
+                    break;
+            }
+        }
+
+    }
+
+}
+
+//管理员页面
+public static void adminMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入管理员密码:");
+    String pass = sc.next();
+    if (pass.equals(Users.admin.pass)) {
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.新建课程 \n2.删除课程 \n3.设置课程老师 \n4.查找老师讲授课程 \n" +
+                            "5.显示课程列表 \n6.按照选课人数排序 \n7.显示学生列表 \n8.显示教师列表 \n" +
+                            "9.添加老师或学生 \n10.删除老师和学生 \n11.恢复学生和教师初始密码 \n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 11) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Courses.addCourses();//新建课程
+                        break;
+                    case 2:
+                        Courses.deleteCourses();//删除课程
+                        break;
+                    case 3:
+                        Courses.setCourseTeacher();//设置课程老师
+                        break;
+                    case 4:
+                        Courses.SearchCourseByTeacher();//查找老师讲授课程
+                        break;
+                    case 5:
+                        Courses.showCourses();//显示课程列表
+                        break;
+                    case 6:
+                        Courses.SortCourseList();//按照选课人数排序
+                        break;
+                    case 7:
+                        Users.showStudents();//显示学生列表
+                        break;
+                    case 8:
+                        Users.showTeachers();//显示教师列表
+                        break;
+                    case 9:
+                        Users.addUsers();//添加老师或学生
+                        break;
+                    case 10:
+                        Users.deleteUsers();//删除老师和学生
+                        break;
+                    case 11:
+                        Users.setOriginpass();//恢复学生和教师初始密码
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+
+//教师页面
+public static void teacherMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入工号：");
+    int inputWorkId = sc.nextInt();
+    System.out.println("请输入密码：");
+    String inputPass = sc.next();
+    Teacher thr = Users.loginTeacher(inputWorkId, inputPass);
+    if (thr != null) {
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.修改登录密码\n2.查看所授课程\n3.查看所授课程的上课学生列表\n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 3) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Users.changeTeacherPass();//修改登录密码
+                        break;
+                    case 2:
+                        Teacher.showTeacherCourse(thr.name);//查看所授课程
+                        break;
+                    case 3:
+                        Teacher.showCourseStuNum(thr.name,thr.level);//查看所授课程的上课学生列表
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+
+//学生页面
+public static void stuMenu() {
+    Scanner sc = new Scanner(System.in);
+    System.out.println("请输入学号:");
+    int inputId = sc.nextInt();
+    System.out.println("请输入密码:");
+    String inputPass = sc.next();
+    Student stu = Users.loginStudent(inputId, inputPass);
+    if (stu != null) {//如果不为空
+        while (true) {
+            System.out.println(
+                    "请选择操作:\n1.修改登录密码\n2.查看所上课程\n3.选修课选课\n0.退出");
+            int choose = sc.nextInt();
+            if (choose == 0) {
+                System.out.println("欢迎使用学生选课系统，再见!");
+                break;
+            } else if (choose < 1 || choose > 3) {
+                System.out.println("输入错误!请重新输入:");
+                continue;
+            } else {
+                switch (choose) {
+                    case 1:
+                        Users.changeStudentPass();//修改登录密码
+                        break;
+                    case 2:
+                        Student.showStudentCourses(inputPass);//查看所上课程
+                        break;
+                    case 3:
+                        Student.studentCourses();//选修课选课
+                        break;
+                }
+            }
+        }
+    } else {
+        System.out.println("密码错误!");
+    }
+}
+
+
+  
+
